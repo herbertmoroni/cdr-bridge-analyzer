@@ -15,7 +15,7 @@ cat("=== Communities detected ===\n")
 print(table(Community = V(g)$community))
 
 bridges <- find_bridges(g)
-cat("\n=== Bridge numbers connecting multiple communities ===\n")
+cat("\n=== Bridge numbers (cut vertices connecting separate communities) ===\n")
 print(bridges)
 
 chain_results <- bucket_gaps(run_chain_tests(bridges$number, calls))

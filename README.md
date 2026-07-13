@@ -11,8 +11,13 @@ rather than the more usual pattern.
    weighted by call count between each pair).
 2. Runs community detection (Louvain) to automatically discover separate
    call networks — no need to manually identify "hub" numbers first.
-3. Flags any number whose contacts span 2+ communities as a **bridge**,
-   ranked by betweenness centrality.
+3. Flags **bridges**: numbers that are graph articulation points (removing
+   them would split the network) *and* whose contacts are mostly outside
+   their own community (same-community ratio ≤ 50%). Hubs are also
+   articulation points, but their contacts stay mostly within their own
+   community (typically 87-100%) — the community-ratio check is what tells
+   a hub apart from a real bridge. Results are ranked by betweenness
+   centrality.
 4. For each bridge, runs a Wilcoxon rank-sum test comparing the time gap
    before a call to the *same* contact vs. before *switching* to a different
    contact. A short switch-gap relative to same-contact-gap is a signature of

@@ -1,19 +1,24 @@
 library(igraph)
 
-# A bridge is a number whose contacts span 2+ communities — the graph-theoretic
-# generalization of "a contact shared between two hand-picked hubs".
+# A bridge is a cut vertex (removing it splits the graph) whose contacts are
+# mostly outside its own community. Hubs are also cut vertices — removing one
+# disconnects its own peripheral contacts — but a hub's neighbors are mostly
+# within its own community, while a real bridge's are mostly split across
+# communities. Empirically: hubs run 87.5-100% same-community, bridges 33-50%.
 find_bridges <- function(g) {
-  scores <- betweenness(g, weights = E(g)$weight)
+  cut_vertices <- as.integer(articulation_points(g))
 
-  n_communities_touched <- sapply(V(g), function(v) {
-    neighbor_communities <- V(g)$community[neighbors(g, v)]
-    length(unique(neighbor_communities))
+  same_community_ratio <- sapply(V(g), function(v) {
+    nbrs <- neighbors(g, v)
+    mean(V(g)$community[nbrs] == V(g)$community[v])
   })
 
-  bridge_idx <- which(n_communities_touched >= 2)
+  scores <- betweenness(g, weights = E(g)$weight)
+
+  bridge_idx <- intersect(cut_vertices, which(same_community_ratio <= 0.5))
   bridges <- data.frame(
     number = V(g)$name[bridge_idx],
-    n_communities = n_communities_touched[bridge_idx],
+    same_community_ratio = same_community_ratio[bridge_idx],
     betweenness = scores[bridge_idx],
     stringsAsFactors = FALSE
   )
