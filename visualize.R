@@ -26,8 +26,8 @@ plot_network <- function(g, bridges, path = "network.html") {
   edges <- data.frame(from = edge_df$from, to = edge_df$to, value = edge_df$weight)
 
   visNetwork(nodes, edges) |>
-    visNodes(font = list(size = 14)) |>
+    visNodes(font = list(size = 14, strokeWidth = 3, strokeColor = "#ffffff")) |>
     visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) |>
-    visPhysics(stabilization = TRUE) |>
+    visPhysics(solver = "forceAtlas2Based", stabilization = TRUE) |>
     visSave(path, selfcontained = FALSE)
 }
