@@ -1,15 +1,26 @@
 source("data_loader.R")
+source("graph_builder.R")
 source("bridge_finder.R")
 source("chain_analysis.R")
+source("visualize.R")
 
-hubs <- c(1187037061, 1189015992, 1198140528, 1199274481, 1199540941, 1199586672)
+csv_path <- "Telefonemas.csv"
+network_html_path <- "network.html"
 
-calls <- load_calls("Telefonemas.csv")
-bridges <- find_bridges(hubs, calls)
+calls <- load_calls(csv_path)
 
-cat("=== Bridge numbers connecting multiple call networks ===\n")
+g <- build_call_graph(calls)
+g <- detect_communities(g)
+cat("=== Communities detected ===\n")
+print(table(Community = V(g)$community))
+
+bridges <- find_bridges(g)
+cat("\n=== Bridge numbers connecting multiple communities ===\n")
 print(bridges)
 
-results <- bucket_gaps(run_chain_tests_distributed(bridges, calls))
+chain_results <- bucket_gaps(run_chain_tests(bridges$number, calls))
 cat("\n=== Chaining test results ===\n")
-print(results)
+print(chain_results)
+
+plot_network(g, bridges, network_html_path)
+cat("\nInteractive network saved to", network_html_path, "\n")

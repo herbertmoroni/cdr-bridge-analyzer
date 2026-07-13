@@ -1,0 +1,70 @@
+# CDR Bridge Analyzer
+
+Finds "bridge" numbers connecting otherwise-separate call networks in a call
+detail record (CDR) export, and tests whether each bridge shows relay/pass-
+through behavior — calling a different party shortly after being called,
+rather than the more usual pattern.
+
+## How it works
+
+1. Builds a call graph from the CDR (numbers = nodes, calls = edges,
+   weighted by call count between each pair).
+2. Runs community detection (Louvain) to automatically discover separate
+   call networks — no need to manually identify "hub" numbers first.
+3. Flags any number whose contacts span 2+ communities as a **bridge**,
+   ranked by betweenness centrality.
+4. For each bridge, runs a Wilcoxon rank-sum test comparing the time gap
+   before a call to the *same* contact vs. before *switching* to a different
+   contact. A short switch-gap relative to same-contact-gap is a signature of
+   relaying (receive, then immediately forward).
+5. Writes an interactive network visualization to `network.html` — nodes
+   colored by community, bridges shown as red triangles. Open it in any
+   browser; drag, zoom, and click a node to see its details.
+
+## Input format
+
+The CSV must have these columns (any extra columns are ignored):
+
+| column      | meaning                              | format                |
+|-------------|---------------------------------------|------------------------|
+| `from`      | originating number                    | numeric                |
+| `to`        | receiving number                      | numeric                |
+| `timestamp` | when the call happened                | `YYYY-MM-DD HH:MM:SS`  |
+| `duration`  | call length in seconds                | numeric                |
+
+Example:
+
+```csv
+from,to,timestamp,duration
+1195646235,1187037061,2012-05-01 08:11:00,22
+1195646235,1187037061,2012-05-01 09:03:00,190
+```
+
+If your carrier export uses different column names, a different date format,
+or a different encoding, rename/reformat it to match before running the
+tool — this keeps the loader simple and predictable rather than guessing at
+carrier-specific quirks.
+
+## Running it
+
+```
+Rscript main.R
+```
+
+Edit the `csv_path` variable at the top of `main.R` to point at a different
+file.
+
+### Dependencies
+
+```r
+install.packages(c("igraph", "visNetwork", "dplyr"))
+```
+
+## Output
+
+- Console: detected communities, ranked bridge numbers, and the chaining
+  test results (median gap when calling the same contact vs. switching, and
+  the test's p-value — a low p-value means the difference is unlikely to be
+  chance).
+- `network.html` (plus a sibling `network_files/` folder it depends on —
+  keep them together): interactive visualization of the call network.
