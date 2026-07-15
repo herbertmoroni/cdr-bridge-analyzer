@@ -34,7 +34,10 @@ plot_network <- function(g, bridges, path = "network.html") {
       color = list(color = "#1f77b4", inherit = FALSE),
       font = list(size = 12, align = "middle", strokeWidth = 3, strokeColor = "#ffffff")
     ) |>
-    visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) |>
+    visOptions(
+      highlightNearest = list(enabled = TRUE, degree = list(from = 1, to = 1), algorithm = "hierarchical", labelOnly = FALSE),
+      nodesIdSelection = TRUE
+    ) |>
     visPhysics(solver = "forceAtlas2Based", stabilization = TRUE)
 
   widget <- htmlwidgets::prependContent(
