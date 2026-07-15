@@ -21,11 +21,19 @@ plot_network <- function(g, bridges, path = "network.html") {
   )
 
   edge_df <- igraph::as_data_frame(g, what = "edges")
-  edges <- data.frame(from = edge_df$from, to = edge_df$to, value = edge_df$weight)
+  edges <- data.frame(
+    from = edge_df$from,
+    to = edge_df$to,
+    value = edge_df$weight,
+    label = as.character(edge_df$weight)
+  )
 
   widget <- visNetwork(nodes, edges, width = "100%", height = "100vh") |>
     visNodes(font = list(size = 14, strokeWidth = 3, strokeColor = "#ffffff")) |>
-    visEdges(color = list(color = "#1f77b4", inherit = FALSE)) |>
+    visEdges(
+      color = list(color = "#1f77b4", inherit = FALSE),
+      font = list(size = 12, align = "middle", strokeWidth = 3, strokeColor = "#ffffff")
+    ) |>
     visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) |>
     visPhysics(solver = "forceAtlas2Based", stabilization = TRUE)
 
