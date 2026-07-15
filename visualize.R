@@ -25,6 +25,7 @@ plot_network <- function(g, bridges, path = "network.html") {
 
   widget <- visNetwork(nodes, edges, width = "100%", height = "100vh") |>
     visNodes(font = list(size = 14, strokeWidth = 3, strokeColor = "#ffffff")) |>
+    visEdges(color = list(color = "#1f77b4", inherit = FALSE)) |>
     visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) |>
     visPhysics(solver = "forceAtlas2Based", stabilization = TRUE)
 
