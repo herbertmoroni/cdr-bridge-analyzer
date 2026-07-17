@@ -1,9 +1,6 @@
 # Overview
 
-Finds "bridge" numbers connecting otherwise-separate call networks in a call
-detail record (CDR) export, and tests whether each bridge shows relay/pass-
-through behavior — calling a different party shortly after being called,
-rather than the more usual pattern.
+Finds "bridge" numbers connecting otherwise-separate call networks in a call detail record (CDR) export, and tests whether each bridge shows relay/pass-through behavior — calling a different party shortly after being called,rather than the more usual pattern.
 
 ![CDR Map](link-analysis.png)
 
@@ -11,34 +8,16 @@ rather than the more usual pattern.
 
 ## How it works
 
-1. Builds a call graph from the CDR (numbers = nodes, calls = edges,
-   weighted by call count between each pair).
-2. Runs community detection (Louvain) to automatically discover separate
-   call networks — no need to manually identify "hub" numbers first.
-3. Flags **bridges**: numbers that are graph articulation points (removing
-   them would split the network) *and* whose contacts are mostly outside
-   their own community. Hubs are also articulation points, but their
-   contacts stay mostly within their own community, so that same-community
-   percentage is what separates the two. The cutoff isn't fixed — it's set
-   per dataset at the largest gap between consecutive same-community
-   percentages. A warning appears in the report if that gap is under 20
-   percentage points, meaning the split was weak for this dataset. Results
-   are ranked by betweenness centrality.
-4. For each bridge, runs a Wilcoxon rank-sum test comparing the time gap
-   before a call to the *same* contact vs. before *switching* to a different
-   contact. A short switch-gap relative to same-contact-gap is a signature of
-   relaying (receive, then immediately forward).
-5. Writes an interactive network visualization to `network.html` — bridges
-   shown as red triangles, everything else uniform, hover for community
-   detail. Open it in any browser; drag, zoom, and click a node to see its
-   details.
-6. Writes `report.html` — a summary page with community/bridge counts, the
-   ranked bridge table (with chaining test results and interpretation), and
-   the calibration warning if the split was weak.
+1. Builds a call graph from the CDR (numbers = nodes, calls = edges, weighted by call count between each pair).
+2. Runs community detection (Louvain) to automatically discover separate call networks — no need to manually identify "hub" numbers first.
+3. Flags **bridges**: numbers that are graph articulation points (removing them would split the network) *and* whose contacts are mostly outside their own community. Hubs are also articulation points, but their contacts stay mostly within their own community, so that same-community percentage is what separates the two. The cutoff isn't fixed — it's set per dataset at the largest gap between consecutive same-community percentages. A warning appears in the report if that gap is under 20 percentage points, meaning the split was weak for this dataset. Results are ranked by betweenness centrality.
+4. For each bridge, runs a Wilcoxon rank-sum test comparing the time gap before a call to the *same* contact vs. before *switching* to a different contact. A short switch-gap relative to same-contact-gap is a signature of relaying (receive, then immediately forward).
+5. Writes an interactive network visualization to `network.html` — bridges shown as red triangles, everything else uniform, hover for community detail. Open it in any browser; drag, zoom, and click a node to see its details.
+6. Writes `report.html` — a summary page with community/bridge counts, the ranked bridge table (with chaining test results and interpretation), and the calibration warning if the split was weak.
 
 # Development Environment
 
-I used [Positron](https://positron.posit.co/), an IDE built on the same core as VS Code with first-class R support, running R 4.6.1 on Windows.
+I used [Positron](https://positron.posit.co/), an IDE built on the same core as VS Code with R support, running R 4.6.1 on Windows.
 
 Libraries used:
 - **igraph** — graph construction, Louvain community detection, articulation point (cut vertex) detection, and betweenness centrality
@@ -65,26 +44,19 @@ from,to,timestamp,duration
 1195646235,1187037061,2012-05-01 09:03:00,190
 ```
 
-If your carrier export uses different column names, a different date format,
-or a different encoding, rename/reformat it to match before running the
-tool — this keeps the loader simple and predictable rather than guessing at
-carrier-specific quirks.
+If your carrier export uses different column names, a different date format, or a different encoding, rename/reformat it to match before running the tool — this keeps the loader simple and predictable rather than guessing at carrier-specific quirks.
 
 ## Running it
 
 - Clone the repository.
 - Install dependencies (see below).
-- Place your CDR export in the project folder, or edit the `csv_path`
-  variable at the top of `main.R` to point at it.
+- Place your CDR export in the project folder, or edit the `csv_path` variable at the top of `main.R` to point at it.
 - Run:
   ```
   Rscript main.R
   ```
-- As it runs, a summary (community sizes, bridge list, chaining test
-  results, and any calibration warning) is also printed to the console —
-  useful for a quick look without opening the HTML files.
-- Open `report.html` for the findings and `network.html` for the
-  interactive graph.
+- As it runs, a summary (community sizes, bridge list, chaining test results, and any calibration warning) is also printed to the console — useful for a quick look without opening the HTML files.
+- Open `report.html` for the findings and `network.html` for the interactive graph.
 
 ### Dependencies
 
@@ -94,14 +66,8 @@ install.packages(c("igraph", "visNetwork", "dplyr", "htmltools"))
 
 ## Output
 
-- `report.html`: summary of numbers/communities/bridges found, the ranked
-  bridge table (% calls within own community, betweenness, median gap when
-  calling the same contact vs. switching, and the test's p-value — a low
-  p-value means the difference is unlikely to be chance), and a warning if
-  the bridge/non-bridge split was weak for this dataset.
-- `network.html` (plus a sibling `network_files/` folder it depends on —
-  keep them together): interactive visualization of the call network,
-  linked from `report.html`.
+- `report.html`: summary of numbers/communities/bridges found, the ranked bridge table (% calls within own community, betweenness, median gap when calling the same contact vs. switching, and the test's p-value — a low p-value means the difference is unlikely to be chance), and a warning if the bridge/non-bridge split was weak for this dataset.
+- `network.html` (plus a sibling `network_files/` folder it depends on — keep them together): interactive visualization of the call network, linked from `report.html`.
 
 # Useful Websites
 
