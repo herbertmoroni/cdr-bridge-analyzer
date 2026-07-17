@@ -18,9 +18,9 @@ rather than the more usual pattern.
    percentage separates hubs from bridges. Rather than a fixed cutoff, the
    threshold is calibrated per dataset: it sorts that percentage across all
    articulation points, finds the largest gap between consecutive values,
-   and sets the threshold at that gap's midpoint. A console warning appears
-   if the gap is under 20 percentage points, meaning the split is weak for
-   that dataset. Results are ranked by betweenness centrality.
+   and sets the threshold at that gap's midpoint. A warning appears in the
+   report if the gap is under 20 percentage points, meaning the split is
+   weak for that dataset. Results are ranked by betweenness centrality.
 4. For each bridge, runs a Wilcoxon rank-sum test comparing the time gap
    before a call to the *same* contact vs. before *switching* to a different
    contact. A short switch-gap relative to same-contact-gap is a signature of
@@ -28,6 +28,9 @@ rather than the more usual pattern.
 5. Writes an interactive network visualization to `network.html` — nodes
    colored by community, bridges shown as red triangles. Open it in any
    browser; drag, zoom, and click a node to see its details.
+6. Writes `report.html` — a summary page with community/bridge counts, the
+   ranked bridge table (with chaining test results and interpretation), and
+   the calibration warning if the split was weak.
 
 ## Input format
 
@@ -65,14 +68,16 @@ file.
 ### Dependencies
 
 ```r
-install.packages(c("igraph", "visNetwork", "dplyr"))
+install.packages(c("igraph", "visNetwork", "dplyr", "htmltools"))
 ```
 
 ## Output
 
-- Console: detected communities, ranked bridge numbers, and the chaining
-  test results (median gap when calling the same contact vs. switching, and
-  the test's p-value — a low p-value means the difference is unlikely to be
-  chance).
+- `report.html`: summary of numbers/communities/bridges found, the ranked
+  bridge table (% calls within own community, betweenness, median gap when
+  calling the same contact vs. switching, and the test's p-value — a low
+  p-value means the difference is unlikely to be chance), and a warning if
+  the bridge/non-bridge split was weak for this dataset.
 - `network.html` (plus a sibling `network_files/` folder it depends on —
-  keep them together): interactive visualization of the call network.
+  keep them together): interactive visualization of the call network,
+  linked from `report.html`.
