@@ -31,12 +31,6 @@ find_bridges <- function(g) {
   scores <- betweenness(g, weights = E(g)$weight)
   adaptive <- find_adaptive_threshold(same_community_pct)
 
-  cat("Adaptive threshold:", round(adaptive$threshold, 1),
-      "% (gap size:", round(adaptive$gap, 1), "percentage points)\n")
-  if (!is.na(adaptive$gap) && adaptive$gap < 20) {
-    cat("Warning: weak separation (gap <20pp) — bridge classification may be unreliable for this dataset\n")
-  }
-
   is_bridge <- if (is.na(adaptive$threshold)) {
     rep(FALSE, length(cut_ids))
   } else {
@@ -51,6 +45,9 @@ find_bridges <- function(g) {
     stringsAsFactors = FALSE
   )
 
-  print(all_cut_vertices[order(all_cut_vertices$same_community_pct), ])
-  all_cut_vertices[all_cut_vertices$is_bridge, c("number", "same_community_pct", "betweenness")]
+  result <- all_cut_vertices[all_cut_vertices$is_bridge, c("number", "same_community_pct", "betweenness")]
+  attr(result, "threshold") <- adaptive$threshold
+  attr(result, "gap") <- adaptive$gap
+  attr(result, "all_cut_vertices") <- all_cut_vertices[order(all_cut_vertices$same_community_pct), ]
+  result
 }
