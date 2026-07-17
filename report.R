@@ -7,13 +7,16 @@ format_minutes <- function(mins) {
   paste0(round(mins / 1440, 1), " days")
 }
 
-generate_report <- function(g, bridges, chain_results, path = "report.html") {
-  gap <- attr(bridges, "gap")
+html_table <- function(headers, rows) {
+  tags$table(tags$tr(lapply(headers, tags$th)), rows)
+}
+
+generate_report <- function(g, bridges, gap, chain_results, path = "report.html") {
   community_sizes <- table(V(g)$community)
 
   bridge_rows <- lapply(seq_len(nrow(bridges)), function(i) {
     number <- bridges$number[i]
-    chain <- chain_results[chain_results$bridge == number, ]
+    chain <- chain_results[i, ]
     significant <- chain$p_value < 0.05
     interpretation <- if (significant) {
       "Statistically significant: call timing changes depending on who it's talking to, consistent with deliberate contact-switching."
@@ -79,18 +82,16 @@ generate_report <- function(g, bridges, chain_results, path = "report.html") {
         "number's call timing pattern changes depending on who it calls next, which can indicate deliberate ",
         "switching between contacts rather than coincidence."
       ),
-      tags$table(
-        tags$tr(
-          tags$th("Number"), tags$th("% Calls Within Own Community"), tags$th("Betweenness"),
-          tags$th("Median Gap (Same Contact)"), tags$th("Median Gap (Switch Contact)"),
-          tags$th("p-value"), tags$th("Interpretation")
-        ),
+      html_table(
+        c("Number", "% Calls Within Own Community", "Betweenness",
+          "Median Gap (Same Contact)", "Median Gap (Switch Contact)",
+          "p-value", "Interpretation"),
         bridge_rows
       ),
 
       tags$h2("Communities"),
-      tags$table(
-        tags$tr(tags$th("Community"), tags$th("Size (numbers)")),
+      html_table(
+        c("Community", "Size (numbers)"),
         lapply(seq_along(community_sizes), function(i) {
           tags$tr(tags$td(names(community_sizes)[i]), tags$td(community_sizes[i]))
         })

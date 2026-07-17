@@ -34,21 +34,3 @@ run_chain_tests <- function(bridges, calls) {
   }
   results
 }
-
-library(dplyr)
-
-bucket_gaps <- function(results_table) {
-  results_table |>
-    mutate(
-      same_contact_bucket = case_when(
-        same_contact_median_min < 5     ~ "Immediate",
-        same_contact_median_min < 1440  ~ "Same-day",
-        TRUE                            ~ "Later"
-      ),
-      switch_bucket = case_when(
-        switch_median_min < 5     ~ "Immediate",
-        switch_median_min < 1440  ~ "Same-day",
-        TRUE                      ~ "Later"
-      )
-    )
-}

@@ -40,6 +40,7 @@ plot_network <- function(g, bridges, path = "network.html") {
     ) |>
     visPhysics(solver = "forceAtlas2Based", stabilization = TRUE)
 
+  # #htmlwidget_container is an internal id from htmlwidgets::saveWidget's template, not a documented API
   widget <- htmlwidgets::prependContent(
     widget,
     tags$style("html, body, #htmlwidget_container { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }")

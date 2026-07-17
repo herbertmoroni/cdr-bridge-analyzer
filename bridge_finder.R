@@ -31,11 +31,7 @@ find_bridges <- function(g) {
   scores <- betweenness(g, weights = E(g)$weight)
   adaptive <- find_adaptive_threshold(same_community_pct)
 
-  is_bridge <- if (is.na(adaptive$threshold)) {
-    rep(FALSE, length(cut_ids))
-  } else {
-    same_community_pct <= adaptive$threshold
-  }
+  is_bridge <- !is.na(adaptive$threshold) & same_community_pct <= adaptive$threshold
 
   all_cut_vertices <- data.frame(
     number = V(g)$name[cut_ids],
@@ -45,9 +41,8 @@ find_bridges <- function(g) {
     stringsAsFactors = FALSE
   )
 
-  result <- all_cut_vertices[all_cut_vertices$is_bridge, c("number", "same_community_pct", "betweenness")]
-  attr(result, "threshold") <- adaptive$threshold
-  attr(result, "gap") <- adaptive$gap
-  attr(result, "all_cut_vertices") <- all_cut_vertices[order(all_cut_vertices$same_community_pct), ]
-  result
+  list(
+    bridges = all_cut_vertices[all_cut_vertices$is_bridge, c("number", "same_community_pct", "betweenness")],
+    gap = adaptive$gap
+  )
 }

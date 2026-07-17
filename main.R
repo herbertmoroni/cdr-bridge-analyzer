@@ -14,11 +14,12 @@ calls <- load_calls(csv_path)
 g <- build_call_graph(calls)
 g <- detect_communities(g)
 
-bridges <- find_bridges(g)
+bridge_result <- find_bridges(g)
+bridges <- bridge_result$bridges
 
-chain_results <- bucket_gaps(run_chain_tests(bridges$number, calls))
+chain_results <- run_chain_tests(bridges$number, calls)
 
 plot_network(g, bridges, network_html_path)
-generate_report(g, bridges, chain_results, report_html_path)
+generate_report(g, bridges, bridge_result$gap, chain_results, report_html_path)
 
 cat("Done. Open", report_html_path, "for the findings and", network_html_path, "for the interactive graph.\n")
