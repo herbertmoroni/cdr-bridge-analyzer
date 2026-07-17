@@ -1,4 +1,4 @@
-library(htmltools)
+suppressPackageStartupMessages(library(htmltools))
 
 format_minutes <- function(mins) {
   if (is.na(mins)) return("N/A")
@@ -29,7 +29,9 @@ generate_report <- function(g, bridges, gap, chain_results, path = "report.html"
       tags$td(paste0(round(bridges$same_community_pct[i], 1), "%")),
       tags$td(round(bridges$betweenness[i])),
       tags$td(format_minutes(chain$same_contact_median_min)),
+      tags$td(chain$same_contact_bucket),
       tags$td(format_minutes(chain$switch_median_min)),
+      tags$td(chain$switch_bucket),
       tags$td(sprintf("%.3f", chain$p_value)),
       tags$td(interpretation)
     )
@@ -84,7 +86,8 @@ generate_report <- function(g, bridges, gap, chain_results, path = "report.html"
       ),
       html_table(
         c("Number", "% Calls Within Own Community", "Betweenness",
-          "Median Gap (Same Contact)", "Median Gap (Switch Contact)",
+          "Median Gap (Same Contact)", "Same Contact Bucket",
+          "Median Gap (Switch Contact)", "Switch Bucket",
           "p-value", "Interpretation"),
         bridge_rows
       ),

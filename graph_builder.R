@@ -1,4 +1,4 @@
-library(igraph)
+suppressPackageStartupMessages(library(igraph))
 
 build_call_graph <- function(calls) {
   edges <- calls[, c("from", "to")]

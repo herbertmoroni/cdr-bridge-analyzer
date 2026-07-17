@@ -17,9 +17,22 @@ g <- detect_communities(g)
 bridge_result <- find_bridges(g)
 bridges <- bridge_result$bridges
 
-chain_results <- run_chain_tests(bridges$number, calls)
+chain_results <- bucket_gaps(run_chain_tests(bridges$number, calls))
 
 plot_network(g, bridges, network_html_path)
 generate_report(g, bridges, bridge_result$gap, chain_results, report_html_path)
 
-cat("Done. Open", report_html_path, "for the findings and", network_html_path, "for the interactive graph.\n")
+cat("=== Communities ===\n")
+print(table(Community = V(g)$community))
+
+cat("\n=== Bridges ===\n")
+print(bridges)
+
+cat("\n=== Chaining test results ===\n")
+print(chain_results[, c("bridge", "n_calls", "p_value", "same_contact_bucket", "switch_bucket")])
+
+if (!is.na(bridge_result$gap) && bridge_result$gap < 20) {
+  cat("\nWarning: weak bridge/hub separation (gap:", round(bridge_result$gap, 1), "pp) — see report for detail.\n")
+}
+
+cat("\nDone. Open", report_html_path, "for the findings and", network_html_path, "for the interactive graph.\n")

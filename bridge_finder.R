@@ -1,4 +1,4 @@
-library(igraph)
+suppressPackageStartupMessages(library(igraph))
 
 # A bridge is a cut vertex (articulation point) whose contacts are mostly
 # outside its own community. Hubs are also cut vertices, but their contacts

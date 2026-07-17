@@ -1,6 +1,6 @@
-library(igraph)
-library(visNetwork)
-library(htmltools)
+suppressPackageStartupMessages(library(igraph))
+suppressPackageStartupMessages(library(visNetwork))
+suppressPackageStartupMessages(library(htmltools))
 
 plot_network <- function(g, bridges, path = "network.html") {
   is_bridge <- V(g)$name %in% bridges$number
