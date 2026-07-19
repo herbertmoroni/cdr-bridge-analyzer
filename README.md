@@ -1,10 +1,19 @@
 # Overview
 
-Finds "bridge" numbers connecting otherwise-separate call networks in a call detail record (CDR) export, and tests whether each bridge shows relay/pass-through behavior — calling a different party shortly after being called,rather than the more usual pattern.
+Forensic link analysis tool that finds hidden numbers bridging separate call networks, using graph theory and statistical testing.
 
+Link analysis is a real technique investigators use. It looks at who talks to who, and finds hidden connections between people.
+
+My tool takes any call record file — any dataset, not just one specific file — and does three things automatically.
+
+- First, it builds a graph. Each phone number is a node. Each call is a connection.
+- Second, it finds separate networks inside that graph, on its own. No manual work needed.
+- Third, it looks for numbers that connect two or more networks together. I call these "bridge" numbers. They are the hidden link between groups that look separate at first.
+
+For each bridge number, the tool also checks something extra: does this number call people faster right after switching to a new contact? That pattern can be a sign of passing messages between groups.
 ![CDR Map](link-analysis.png)
 
-<!-- [Software Demo Video](https://youtu.be/oBetn0pWCQE) -->
+[Software Demo Video](https://youtu.be/PqwRHmwR9E4) 
 
 ## How it works
 
@@ -85,6 +94,6 @@ install.packages(c("igraph", "visNetwork", "dplyr", "htmltools"))
 # AI Disclosure
 
 AI  was used as a coding assistant on this project, under my direction and review:
-- Report layout and styling (`report.R`, `visualize.R`).
+- Report layout and styling (`report.R`).
 - R analysis logic (graph construction, bridge detection, chain analysis).
 
