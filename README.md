@@ -11,6 +11,7 @@ My tool takes any call record file â€” any dataset, not just one specific file â
 - Third, it looks for numbers that connect two or more networks together. I call these "bridge" numbers. They are the hidden link between groups that look separate at first.
 
 For each bridge number, the tool also checks something extra: does this number call people faster right after switching to a new contact? That pattern can be a sign of passing messages between groups.
+
 ![CDR Map](link-analysis.png)
 
 [Software Demo Video](https://youtu.be/PqwRHmwR9E4) 
